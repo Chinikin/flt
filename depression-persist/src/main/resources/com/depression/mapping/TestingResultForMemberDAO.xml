@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.TestingResultForMemberDAO">
+	<resultMap type="com.depression.model.TestingResultForMember"
+		id="testingResultForMember" autoMapping="true">
+		<id property="tid" column="tid" />
+		<result property="mid" column="mid" />
+		<result property="resId" column="res_id" />
+		<result property="testTime" column="test_time" />
+		<result property="isDelete" column="is_delete" />
+	</resultMap>
+
+	<insert id="insertTestingResultForMember">
+		insert into testing_result_for_member
+		(
+		mid,
+		res_id,
+		test_time
+		)
+		VALUES(
+		#{mid},
+		#{resId},
+		#{testTime}
+		)
+	</insert>
+
+	<update id="updateTestingResultForMember">
+		update testing_result_for_member
+		<set>
+			<if test="mid != null">
+				mid = #{mid},
+			</if>
+			<if test="resId != null">
+				res_id = #{resId},
+			</if>
+			<if test="testTime != null">
+				test_time = #{testTime},
+			</if>
+			<if test="isDelete != null">
+				is_delete = #{isDelete}
+			</if>
+		</set>
+		where tid = #{tid}
+	</update>
+
+	<delete id="deleteTestingResultForMember" parameterType="string">
+		delete
+		from
+		testing_result_for_member where tid = #{tid}
+	</delete>
+
+	<select id="getTestingResultForMemberList" resultMap="testingResultForMember">
+		select *
+		from
+		testing_result_for_member
+	</select>
+
+	<select id="getTestingResultForMemberByResultId" parameterType="string"
+		resultMap="testingResultForMember">
+		select * from testing_result_for_member where tid =
+		#{tid}
+	</select>
+
+	<select id="getTestingResultForMemberByResultIds" parameterType="java.util.List"
+		resultMap="testingResultForMember">
+		select * from testing_result_for_member where tid in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="getCounts" resultType="java.lang.Long">
+		select count(*) from
+		testing_result_for_member
+	</select>
+
+	<select id="getTestingResultForMemberByQuery" parameterType="map"
+		resultMap="testingResultForMember">
+		select * from testing_result_for_member
+		<where>
+			<if test="mid != null">
+				mid = #{mid}
+			</if>
+			<if test="resId != null">
+				AND res_id = #{resId}
+			</if>
+			<if test="testTime != null">
+				AND test_time = #{testTime}
+			</if>
+		</where>
+	</select>
+
+	<select id="getTestingResultForMemberByQueryTestingResult"
+		resultMap="testingResultForMember">
+		select * from testing_result_for_member
+		<where>
+			<if test="mid != null">
+				mid = #{mid}
+			</if>
+			<if test="resId != null">
+				AND res_id = #{resId}
+			</if>
+			<if test="testTime != null">
+				AND test_time = #{testTime}
+			</if>
+			<if test="isDelete != null">
+				AND is_delete = #{isDelete}
+			</if>
+		</where>
+	</select>
+
+	<select id="getPageList" resultMap="testingResultForMember">
+		select * from testing_result where tid > (
+		select tid from
+		testing_result_for_member
+		<where>
+			<if test="mid != null">
+				mid = #{mid}
+			</if>
+			<if test="resId != null">
+				AND res_id = #{resId}
+			</if>
+			<if test="testTime != null">
+				AND test_time = #{testTime}
+			</if>
+		</where>
+		LIMIT ${pageStartNum}, 1
+		)
+		<if test="mid != null">
+			mid = #{mid}
+		</if>
+		<if test="resId != null">
+			AND res_id = #{resId}
+		</if>
+		<if test="testTime != null">
+			AND test_time = #{testTime}
+		</if>
+		${pageSize};
+	</select>
+
+	<select id="getPageCounts" resultType="long">
+		select count(*) from testing_result_for_member
+		<where>
+			<if test="mid != null">
+				mid = #{mid}
+			</if>
+			<if test="resId != null">
+				AND res_id = #{resId}
+			</if>
+			<if test="testTime != null">
+				AND test_time = #{testTime}
+			</if>
+		</where>
+	</select>
+
+</mapper>

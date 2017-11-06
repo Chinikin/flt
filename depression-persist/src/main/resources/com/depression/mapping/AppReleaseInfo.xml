@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.AppReleaseInfoDAO">
+	<resultMap type="com.depression.model.AppReleaseInfo" id="appReleaseInfo"
+	autoMapping="true">
+		<id property="releaseId" column="release_id"/>
+		<result property="versionName" column="version_name"/>
+		<result property="versionNum" column="version_num"/>
+		<result property="svnNum" column="svn_num"/>
+		<result property="path" column="path"/>
+		<result property="osType" column="os_type"/>
+		<result property="note" column="note"/>
+		<result property="isDelete" column="is_delete"/>
+	</resultMap>
+	
+	<insert id="insert">
+		insert into app_release_info
+		(
+			version_name,
+			version_num,
+			svn_num,
+			path,
+			note,
+			os_type
+		)values
+		(
+			#{versionName},
+			#{versionNum},
+			#{svnNum},
+			#{path},
+			#{note},
+			#{osType}
+		)
+	</insert>
+	
+	<update id="update">
+		update app_release_info
+		<set>
+			<if test="versionName != null">
+				version_name = #{versionName},
+			</if>
+			<if test="versionNum != null">
+				version_num = #{versionNum},
+			</if>
+			<if test="svnNum != null">
+				svn_num = #{svnNum},
+			</if>
+			<if test="path != null">
+				path = #{path},
+			</if>
+			<if test="osType != null">
+				os_type = #{osType},
+			</if>
+			<if test="note != null">
+				note = #{note}
+			</if>
+		</set>
+		where release_id=#{releaseId} and is_delete=0
+	</update>
+	
+	<update id="delete">
+		update app_release_info 
+		set is_delete=1
+		where release_id=#{releaseId}
+	</update>
+	
+	<select id="listByPage" resultMap="appReleaseInfo">
+		select * from app_release_info
+		where is_delete=0 and os_type=#{osType}
+		limit #{pageStartNum},#{pageSize}
+	</select>
+	
+	<select id="getLatestOne" resultMap="appReleaseInfo">
+		select * from app_release_info
+		where is_delete=0 and os_type=#{osType}
+		order by release_id
+		limit 0,1
+	</select>
+	
+</mapper>

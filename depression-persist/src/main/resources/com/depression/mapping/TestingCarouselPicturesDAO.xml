@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.TestingCarouselPicturesDAO">
+
+	<resultMap type="com.depression.model.TestingCarouselPictures" id="testingCarouselPictures"
+		autoMapping="true">
+		<id property="cpid" column="cpid" />
+		<result property="type" column="type" />
+		<result property="descp" column="descp" />
+		<result property="imgPath" column="img_path" />
+		<result property="testingId" column="testing_id" />
+		<result property="isDelete" column="is_delete" />
+	</resultMap>
+
+	<select id="checkTestingCarouselPicturesExits" resultType="int">
+		select count(*) from testing_carousel_pictures where
+		descp=#{descp}
+	</select>
+
+	<select id="getTestingCarouselPicturesList" resultMap="testingCarouselPictures">
+		select * from testing_carousel_pictures
+	</select>
+
+	<select id="getTestingCarouselPicturesListByQuery" parameterType="map"
+		resultMap="testingCarouselPictures">
+		select * from testing_carousel_pictures
+		where 1=1
+		<where>
+			<if test="descp != null and descp != ''">
+				and descp like
+				CONCAT(CONCAT('%',#{descp}),'%')
+			</if>
+		</where>
+	</select>
+
+	<select id="getPageList" resultMap="testingCarouselPictures">
+
+		select * from testing_carousel_pictures where cpid >= (
+		select
+		cpid
+		from
+		testing_carousel_pictures
+		where 1=1
+		<if test="descp != null and descp != ''">
+			and descp like
+			CONCAT(CONCAT('%',#{descp}),'%')
+		</if>
+		LIMIT ${pageStartNum}, 1
+		)
+		<if test="descp != null and descp != ''">
+			and descp like
+			CONCAT(CONCAT('%',#{descp}),'%')
+		</if>
+		LIMIT ${pageSize};
+	</select>
+
+	<select id="getPageCounts" resultType="long">
+		select count(*) from testing_carousel_pictures
+		where 1=1
+		<if test="descp != null and descp != ''">
+			and descp like
+			CONCAT(CONCAT('%',#{descp}),'%')
+		</if>
+	</select>
+
+	<select id="getTestingCarouselPicturesListByQueryTestingCarouselPictures" resultMap="testingCarouselPictures">
+		select * from testing_carousel_pictures where 1=1
+		<if test="cpid != null and cpid != ''">
+			and cpid = #{cpid}
+		</if>
+		<if test="type != null and type != ''">
+			and type = #{type}
+		</if>
+		<if test="descp != null and descp != ''">
+			and descp like
+			CONCAT(CONCAT('%',#{descp}),'%')
+		</if>
+		<if test="isDelete != null">
+			and is_delete = #{isDelete}
+		</if>
+		order by cpid desc
+	</select>
+
+	<select id="getTestingCarouselPicturesByPrimaryId" resultMap="testingCarouselPictures">
+		select * from testing_carousel_pictures where
+		cpid=#{cpid}
+	</select>
+
+	<update id="updateTestingCarouselPicturesEnableByPrimaryIds"
+		parameterType="list">
+		update testing_carousel_pictures
+		<set>
+			is_delete = '0'
+		</set>
+		where cpid in
+		<foreach collection="list" item="cpid" open="("
+			separator="," close=")">
+			#{cpid, jdbcType=NUMERIC}
+		</foreach>
+	</update>
+
+	<update id="updateTestingCarouselPicturesDisableByPrimaryIds"
+		parameterType="list">
+		update testing_carousel_pictures
+		<set>
+			is_delete = '1'
+		</set>
+		where cpid in
+		<foreach collection="list" item="cpid" open="("
+			separator="," close=")">
+			#{cpid, jdbcType=NUMERIC}
+		</foreach>
+	</update>
+
+	<update id="updateTestingCarouselPictures" >
+		update testing_carousel_pictures
+		<set>
+			<if test="type != null and type != ''">
+				type = #{type},
+			</if>
+			<if test="descp != null and descp != ''">
+				descp = #{descp},
+			</if>
+			<if test="imgPath != null and imgPath != ''">
+				img_path = #{imgPath},
+			</if>
+			<if test="testingId != null and testingId != ''">
+				testing_id = #{testingId},
+			</if>
+			<if test="isDelete != null and isDelete != ''">
+				is_delete = #{isDelete}
+			</if>
+		</set>
+		where cpid=#{cpid}
+	</update>
+
+	<insert id="insertTestingCarouselPictures" useGeneratedKeys="true" keyProperty="cpid">
+		insert into
+		testing_carousel_pictures
+		(
+		type,
+		descp,
+		testing_id,
+		img_path
+		)
+		VALUES(
+		#{type},
+		#{descp},
+		#{testingId},
+		#{imgPath}
+		)
+
+	</insert>
+
+	<delete id="deleteTestingCarouselPictures" parameterType="string">
+		delete
+		testing_carousel_pictures where cpid=#{cpid}
+	</delete>
+
+
+</mapper>

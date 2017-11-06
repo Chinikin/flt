@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.SystemMessageDAO">
+
+	<resultMap type="com.depression.model.SystemMessage" id="systemMessage"
+		autoMapping="true">
+		<id property="messageId" column="message_id" />
+		<result property="mid" column="mid" />
+		<result property="type" column="type" />
+		<result property="refId" column="ref_id" />
+		<result property="isDelete" column="is_delete" />
+		<result property="sendTime" column="send_time" />
+		<result property="readStatus" column="read_status" />
+	</resultMap>
+
+	<insert id="insert">
+	   <![CDATA[
+	       insert into system_message (
+            mid,
+            type,
+            ref_id,
+            is_delete,
+            send_time,
+            read_status
+           ) values (
+            #{mid},
+            #{type},
+            #{refId},
+            #{isDelete},
+            #{sendTime},
+            #{readStatus}
+           )
+	   ]]>
+	</insert>
+
+	<select id="getSystemMessage" resultMap="systemMessage">
+	   <![CDATA[
+	       select * from system_message where is_delete=0
+	   ]]>
+		<if test="mid != null">
+			<![CDATA[AND mid=#{mid}]]>
+		</if>
+		<if test="readStatus !=null">
+	      	<![CDATA[AND read_status = #{readStatus}]]>
+		</if>
+		<if test="type !=null">
+	      	<![CDATA[AND type = #{type}]]>
+		</if>
+		<if test="messageId !=null">
+	      	<![CDATA[AND message_id = #{messageId}]]>
+		</if>
+		order by message_id desc
+		LIMIT #{pageStartNum},#{pageSize}
+	</select>
+	
+	<select id="getSystemMessageCount" resultType="long">
+	   <![CDATA[
+	       select count(*) from system_message where is_delete=0
+	   ]]>
+		<if test="mid != null">
+			<![CDATA[AND mid=#{mid}]]>
+		</if>
+		<if test="readStatus !=null">
+	      	<![CDATA[AND read_status = #{readStatus}]]>
+		</if>
+		<if test="type !=null">
+	      	<![CDATA[AND type = #{type}]]>
+		</if>
+		<if test="messageId !=null">
+	      	<![CDATA[AND message_id = #{messageId}]]>
+		</if>
+	</select>
+
+	<update id="update">
+		update
+		system_message
+		set
+		<if test="readStatus !=null">
+            <![CDATA[read_status=#{readStatus}]]>
+		</if>
+		<![CDATA[	 
+		 where 
+		 message_id=#{messageId}
+		]]>
+	</update>
+
+	<update id="delete" parameterType="Integer">
+		update
+		system_message
+		set is_delete=1
+		where 1=1
+		<if test="messageId !=null">
+	      	<![CDATA[AND message_id = #{messageId}]]>
+		</if>
+	</update>
+
+</mapper>

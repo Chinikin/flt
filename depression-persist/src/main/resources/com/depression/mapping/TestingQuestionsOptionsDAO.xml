@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.TestingQuestionsOptionsDAO">
+
+	<resultMap type="com.depression.model.TestingQuestionsOptions" id="testingQuestionsOptions"
+		autoMapping="true">
+		<id property="optionsId" column="options_id" />
+		<result property="questionsId" column="questions_id" />
+		<result property="sequence" column="sequence" />
+		<result property="title" column="title" />
+		<result property="score" column="score" />
+		<result property="optType" column="opt_type" />
+		<result property="jumpToQuestionNo" column="jump_to_question_no" />
+		<result property="jumpResultTag" column="jump_result_tag" />
+		<result property="isDelete" column="is_delete" />
+	</resultMap>
+
+	<select id="checkTestingQuestionsOptionsExits" resultType="int">
+		select count(*) from testing_questions_options where
+		title=#{title}
+	</select>
+
+	<select id="getCounts" resultType="long">
+		select count(*) from
+		testing_questions_options
+	</select>
+
+	<select id="getTestingQuestionsOptionsList"
+		resultMap="testingQuestionsOptions">
+		select * from testing_questions_options
+	</select>
+
+	<select id="getTestingQuestionsOptionsListByQuery" parameterType="map" resultMap="testingQuestionsOptions">
+		select * from testing_questions_options
+		where 1=1
+		<where>
+			<if test="title != null and title != ''">
+				and title like CONCAT(CONCAT('%',#{title}),'%')
+			</if>
+		</where>
+	</select>
+
+	<select id="getPageList" resultMap="testingQuestionsOptions">
+
+		select * from testing_questions_options where options_id >= (
+		select options_id
+		from
+		testing_questions_options
+		where 1=1 
+		<if test="title != null and title != ''">
+			and title like CONCAT(CONCAT('%',#{title}),'%')
+		</if>
+		LIMIT ${pageStartNum}, 1
+		) 
+		<if test="title != null and title != ''">
+			and title like CONCAT(CONCAT('%',#{title}),'%')
+		</if>
+		LIMIT ${pageSize};
+	</select>
+
+	<select id="getPageCounts" resultType="long">
+		select count(*) from testing_questions_options
+		where 1=1
+		<if test="title != null and title != ''">
+			and title like CONCAT(CONCAT('%',#{title}),'%')
+		</if>
+	</select>
+
+	<select id="getValidTestingQuestionsOptionsListByQuestionsId" resultMap="testingQuestionsOptions">
+		select * from testing_questions_options where questions_id = #{questionsId}  and is_delete = '0'
+	</select>
+
+	<select id="getTestingQuestionsOptionsListByQueryTestingQuestionsOptions" parameterType="com.depression.model.TestingQuestionsOptions"
+		resultMap="testingQuestionsOptions">
+		select * from testing_questions_options where 1=1
+		<if test="questionsId != null and questionsId != ''">
+			and questions_id = #{questionsId} 
+		</if>
+		<if test="title != null and title != ''">
+			and title like CONCAT(CONCAT('%',#{title}),'%')
+		</if>
+	</select>
+
+	<select id="getTestingQuestionsOptionsByQuestionsOptionsId" parameterType="string"
+		resultMap="testingQuestionsOptions">
+		select * from testing_questions_options where options_id=#{optionsId}
+	</select>
+
+	<select id="getTestingQuestionsOptionsByQuestionsOptionsIds" parameterType="list"
+		resultMap="testingQuestionsOptions">
+		select * from testing_questions_options where options_id in
+		<foreach collection="list" item="classList" open="("
+			separator="," close=")">
+			#{classList}
+		</foreach>
+	</select>
+
+	<update id="updateTestingQuestionsOptionsEnableByOptionsIds" parameterType="list">
+		update testing_questions_options
+		<set>
+			is_delete = '0'
+		</set>
+		where options_id in
+		<foreach collection="list" item="optionsId" open="("
+			separator="," close=")">
+			#{optionsId, jdbcType=NUMERIC}
+		</foreach>
+	</update>
+	
+	<update id="updateTestingQuestionsOptionsDisableByOptionsIds" parameterType="list">
+		update testing_questions_options
+		<set>
+			is_delete = '1'
+		</set>
+		where options_id in
+		<foreach collection="list" item="optionsId" open="("
+			separator="," close=")">
+			#{optionsId, jdbcType=NUMERIC}
+		</foreach>
+	</update>
+	
+	<update id="updateTestingQuestionsOptionsDisableByQuestionsId" parameterType="list">
+		update testing_questions_options
+		<set>
+			is_delete = '1'
+		</set>
+		where questions_id = #{questionsId}
+	</update>
+
+	<update id="updateTestingQuestionsOptions">
+		update testing_questions_options
+		<set>
+			<if test="questionsId != null and questionsId != ''">
+				questions_id = #{questionsId},
+			</if>
+			<if test="sequence != null and sequence != ''">
+				sequence = #{sequence},
+			</if>
+			<if test="title != null and title != ''">
+				title = #{title},
+			</if>
+			<if test="score != null">
+				score = #{score},
+			</if>
+			<if test="optType != null">
+				opt_type = #{optType},
+			</if>
+			<if test="jumpToQuestionNo != null">
+				jump_to_question_no = #{jumpToQuestionNo},
+			</if>
+			<if test="jumpResultTag != null">
+				jump_result_tag = #{jumpResultTag},
+			</if>
+			<if test="isDelete != null and isDelete != ''">
+				is_delete = #{isDelete}
+			</if>
+		</set>
+		where options_id=#{optionsId}
+	</update>
+
+	<insert id="insertTestingQuestionsOptions">
+
+		insert into
+		testing_questions_options
+		(
+		questions_id,
+		sequence,
+		title,
+		score,
+		opt_type,
+		jump_to_question_no,
+		jump_result_tag
+		)
+		VALUES(
+		#{questionsId},
+		#{sequence},
+		#{title},
+		#{score},
+		#{optType},
+		#{jumpToQuestionNo},
+		#{jumpResultTag}
+		)
+
+	</insert>
+
+	<delete id="deleteTestingQuestionsOptions" parameterType="string">
+		delete testing_questions_options where options_id=#{optionsId}
+	</delete>
+
+
+</mapper>

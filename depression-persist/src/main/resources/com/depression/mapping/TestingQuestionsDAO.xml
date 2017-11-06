@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.TestingQuestionsDAO">
+
+	<resultMap type="com.depression.model.TestingQuestions" id="testingQuestions"
+		autoMapping="true">
+		<id property="questionsId" column="questions_id" />
+		<result property="testingId" column="testing_id" javaType="java.lang.Long"/>
+		<result property="subjectSeqNum" column="subject_seq_num" />
+		<result property="questionsTitle" column="questions_title" />
+		<result property="isDelete" column="is_delete" />
+	</resultMap>
+
+	<select id="checkTestingQuestionsExits" parameterType="com.depression.model.TestingQuestions"
+		resultType="int">
+		select count(*) from testing_questions where
+		questions_title=#{questionsTitle}
+	</select>
+
+	<select id="getCounts" resultType="long">
+		select count(*) from
+		testing_questions
+	</select>
+	
+	<select id="getValidQueCountsByTestingId" resultType="long">
+		select count(*) from
+		testing_questions
+		where is_delete = '0'
+		and testing_id = #{testingId}
+	</select>
+
+	<select id="getTestingQuestionsList" resultMap="testingQuestions">
+		select * from testing_questions
+	</select>
+
+	<select id="getTestingQuestionsListByQuery" parameterType="map"
+		resultMap="testingQuestions">
+		select * from testing_questions
+		where 1=1
+		<where>
+			<if test="questionsTitle != null and questionsTitle != ''">
+				and questions_title like
+				CONCAT(CONCAT('%',#{questionsTitle}),'%')
+			</if>
+		</where>
+	</select>
+
+	<select id="getPageList" parameterType="com.depression.model.TestingQuestions"
+		resultMap="testingQuestions">
+
+		select * from testing_questions where questions_id >= (
+		select
+		questions_id
+		from
+		testing_questions
+		where 1=1
+		<if test="questionsTitle != null and questionsTitle != ''">
+			and questions_title like
+			CONCAT(CONCAT('%',#{questionsTitle}),'%')
+		</if>
+		LIMIT ${pageStartNum}, 1
+		)
+		<if test="questionsTitle != null and questionsTitle != ''">
+			and questions_title like
+			CONCAT(CONCAT('%',#{questionsTitle}),'%')
+		</if>
+		LIMIT ${pageSize};
+	</select>
+
+	<select id="getPageCounts" parameterType="com.depression.model.TestingQuestions"
+		resultType="long">
+		select count(*) from testing_questions
+		where 1=1
+		<if test="questionsTitle != null and questionsTitle != ''">
+			and questions_title like
+			CONCAT(CONCAT('%',#{questionsTitle}),'%')
+		</if>
+	</select>
+
+	<select id="getValidTestingQuestionsListByTestingId"  resultMap="testingQuestions">
+		select * from testing_questions where testing_id = #{testingId} and
+		is_delete = '0'
+		order by subject_seq_num asc
+	</select>
+
+	<select id="getTestingQuestionsListByQueryTestingQuestions"
+		parameterType="com.depression.model.TestingQuestions"
+		resultMap="testingQuestions">
+		select * from testing_questions where 1=1
+		<if test="testingId != null and testingId != ''">
+			and testing_id = #{testingId}
+		</if>
+		<if test="questionsTitle != null and questionsTitle != ''">
+			and questions_title like
+			CONCAT(CONCAT('%',#{questionsTitle}),'%')
+		</if>
+		order by subject_seq_num asc
+	</select>
+
+	<select id="getTestingQuestionsByQuestionsId" parameterType="string"
+		resultMap="testingQuestions">
+		select * from testing_questions where
+		questions_id=#{questionsId}
+	</select>
+
+	<select id="getTestingQuestionsByQuestionsIds" parameterType="list"
+		resultMap="testingQuestions">
+		select * from testing_questions where questions_id in
+		<foreach collection="list" item="classList" open="("
+			separator="," close=")">
+			#{classList}
+		</foreach>
+	</select>
+
+	<update id="updateTestingQuestionsEnableByQuestionsIds"
+		parameterType="list">
+		update testing_questions
+		<set>
+			is_delete = '0'
+		</set>
+		where questions_id in
+		<foreach collection="list" item="questionsId" open="("
+			separator="," close=")">
+			#{questionsId, jdbcType=NUMERIC}
+		</foreach>
+	</update>
+
+	<update id="updateTestingQuestionsDisableByQuestionsIds"
+		parameterType="list">
+		update testing_questions
+		<set>
+			is_delete = '1'
+		</set>
+		where questions_id in
+		<foreach collection="list" item="questionsId" open="("
+			separator="," close=")">
+			#{questionsId, jdbcType=NUMERIC}
+		</foreach>
+	</update>
+
+	<update id="updateTestingQuestions" parameterType="com.depression.model.TestingQuestions">
+		update testing_questions
+		<set>
+			<if test="testingId != null and testingId != ''">
+				testing_id = #{testingId},
+			</if>
+			<if test="subjectSeqNum != null and subjectSeqNum != ''">
+				subject_seq_num = #{subjectSeqNum},
+			</if>
+			<if test="questionsTitle != null and questionsTitle != ''">
+				questions_title = #{questionsTitle},
+			</if>
+			<if test="isDelete != null and isDelete != ''">
+				is_delete = #{isDelete}
+			</if>
+		</set>
+		where questions_id=#{questionsId}
+	</update>
+
+	<insert id="insertTestingQuestions" parameterType="com.depression.model.TestingQuestions" useGeneratedKeys="true" keyProperty="questionsId">
+		insert into
+		testing_questions
+		(
+		testing_id,
+		subject_seq_num,
+		questions_title
+		)
+		VALUES(
+		#{testingId},
+		#{subjectSeqNum},
+		#{questionsTitle}
+		)
+
+	</insert>
+
+	<delete id="deleteTestingQuestions" parameterType="string">
+		delete
+		testing_questions where questions_id=#{questionsId}
+	</delete>
+
+
+</mapper>

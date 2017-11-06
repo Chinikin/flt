@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.FamousDoctorsDAO">
+
+	<resultMap type="com.depression.model.FamousDoctors" id="famousDoctors"
+		autoMapping="true">
+		<id property="doctId" column="doct_id" />
+		<result property="name" column="name" />
+		<result property="hospital" column="hospital" />
+		<result property="department" column="department" />
+		<result property="position" column="position" />
+		<result property="specializes" column="specializes" />
+		<result property="briefIntroduction" column="brief_introduction" />
+		<result property="isDelete" column="is_delete" />
+	</resultMap>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="commentId">
+	   <![CDATA[
+	       insert into famous_doctors (
+	       	avatar,
+            name,
+            hospital,
+            department,
+            position,
+            specializes,
+            brief_introduction
+           ) values (
+           	#{avatar},
+            #{name},
+            #{hospital},
+            #{department},
+            #{position},
+            #{specializes},
+            #{briefIntroduction}
+           )
+	   ]]>
+	</insert>
+
+	<select id="getValidFamousDoctorsList" resultMap="famousDoctors">
+	   <![CDATA[
+	       select * from famous_doctors where is_delete='0'
+	   ]]>
+	</select>
+
+	<update id="update">
+		update
+		famous_doctors
+		set
+		<if test="name !=null">
+            <![CDATA[name=#{name}]]>
+		</if>
+		<if test="name !=null">
+            <![CDATA[,avatar=#{avatar}]]>
+		</if>
+		<if test="hospital !=null">
+            <![CDATA[,hospital=#{hospital}]]>
+		</if>
+		<if test="department !=null">
+            <![CDATA[,department=#{department}]]>
+		</if>
+		<if test="position !=null">
+            <![CDATA[,position=#{position}]]>
+		</if>
+		<if test="specializes !=null">
+            <![CDATA[,specializes=#{specializes}]]>
+		</if>
+		<if test="briefIntroduction !=null">
+            <![CDATA[,brief_introduction=#{briefIntroduction}]]>
+		</if>
+		<if test="isDelete !=null">
+            <![CDATA[,is_delete=#{isDelete}]]>
+		</if>
+		<![CDATA[
+		 where 
+		 doct_id=#{doctId}
+		]]>
+	</update>
+
+	<update id="updateFamousDoctorsEnableByDoctIds" parameterType="list">
+		update famous_doctors
+		<set>
+			is_delete = '0'
+		</set>
+		where doct_id in
+		<foreach collection="list" item="doctId" open="("
+			separator="," close=")">
+			#{doctId, jdbcType=NUMERIC}
+		</foreach>
+	</update>
+	
+	<update id="updateFamousDoctorsDisableByDoctIds" parameterType="list">
+		update famous_doctors
+		<set>
+			is_delete = '1'
+		</set>
+		where doct_id in
+		<foreach collection="list" item="doctId" open="("
+			separator="," close=")">
+			#{doctId, jdbcType=NUMERIC}
+		</foreach>
+	</update>
+	
+	<select id="getPageList" resultMap="famousDoctors">
+
+		select * from famous_doctors where doct_id >= (
+		select doct_id
+		from
+		famous_doctors
+		where 1=1 
+		<if test="name != null and name != ''">
+			and name like CONCAT(CONCAT('%',#{name}),'%')
+		</if>
+		ORDER BY doct_id ASC
+		LIMIT ${pageStartNum}, 1
+		) 
+		<if test="name != null and name != ''">
+			and name like CONCAT(CONCAT('%',#{name}),'%')
+		</if>
+		LIMIT ${pageSize};
+	</select>
+
+	<select id="getPageCounts" resultType="long">
+		select count(*) from famous_doctors
+		where 1=1
+		<if test="name != null and name != ''">
+			and name like CONCAT(CONCAT('%',#{name}),'%')
+		</if>
+	</select>
+	
+	<select id="getFamousDoctorsByDoctId" resultMap="famousDoctors">
+		select * from famous_doctors
+		where 1=1
+		<if test="doctId != null and doctId != ''">
+			and doct_id = #{doctId}
+		</if>
+	</select>
+
+</mapper>

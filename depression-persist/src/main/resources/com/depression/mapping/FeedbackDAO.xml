@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.FeedbackDAO">
+
+	<resultMap type="com.depression.model.Feedback" id="feedback"
+		autoMapping="true">
+		<id property="fid" column="fid" />
+		<result property="mid" column="mid" />
+		<result property="fContent" column="f_content" />
+		<result property="fTime" column="f_time" />
+		<result property="isDelete" column="is_delete" />
+	</resultMap>
+
+	<select id="getFeedbackList" resultMap="feedback">
+		select * from feedback
+	</select>
+
+	<select id="getFeedbackListByQuery" resultMap="feedback">
+		select * from feedback
+		where 1=1 
+			<if test="fContent != null and fContent != ''">
+				and f_content like CONCAT(CONCAT('%',#{fContent}),'%')
+			</if>
+	</select>
+
+	<select id="getPageList" resultMap="feedback">
+		select * from feedback where fid >= (
+		select fid
+		from
+		feedback
+		where 1=1 
+		<if test="fContent != null and fContent != ''">
+			and f_content like CONCAT(CONCAT('%',#{fContent}),'%')
+		</if>
+		LIMIT ${pageStartNum}, 1
+		)
+		<if test="fContent != null and fContent != ''">
+			and f_content like CONCAT(CONCAT('%',#{fContent}),'%')
+		</if>
+		ORDER BY f_time desc
+		LIMIT ${pageSize};
+	</select>
+
+	<select id="getPageCounts" resultType="long">
+		select count(*) from feedback
+		where 1=1
+		<if test="fContent != null and fContent != ''">
+			and f_content like CONCAT(CONCAT('%',#{fContent}),'%')
+		</if>
+	</select>
+
+	<select id="getFeedbackListByQueryFeedback" resultMap="feedback">
+		select * from feedback where 1=1
+	</select>
+
+	<select id="getFeedbackById" resultMap="feedback">
+		select * from feedback where fid=#{fid}
+	</select>
+	
+	<select id="getValidFeedbackById" resultMap="feedback">
+		select * from feedback where 
+		is_delete = '0' 
+		AND fid=#{fid}
+	</select>
+
+	<select id="getFeedbackByIds" parameterType="list" resultMap="feedback">
+		select * from feedback where fid in
+		<foreach collection="list" item="classList" open="("
+			separator="," close=")">
+			#{classList}
+		</foreach>
+	</select>
+
+	<update id="updateFeedbackEnableByFeedbackIds" parameterType="list">
+		update feedback
+		<set>
+			is_delete = '0'
+		</set>
+		where fid in
+		<foreach collection="list" item="fid" open="("
+			separator="," close=")">
+			#{fid, jdbcType=NUMERIC}
+		</foreach>
+	</update>
+	
+	<update id="updateFeedbackDisableByFeedbackIds" parameterType="list">
+		update feedback
+		<set>
+			is_delete = '1'
+		</set>
+		where fid in
+		<foreach collection="list" item="fid" open="("
+			separator="," close=")">
+			#{fid, jdbcType=NUMERIC}
+		</foreach>
+	</update>
+
+	<update id="updateFeedback">
+		update feedback
+		<set>
+			<if test="mid != null and mid != ''">
+				mid = #{mid},
+			</if>
+			<if test="fContent != null and fContent != ''">
+				f_content = #{fContent},
+			</if>
+			<if test="fTime != null and fTime != ''">
+				f_time = #{fTime},
+			</if>
+			<if test="isDelete != null and isDelete != ''">
+				is_delete = #{isDelete},
+			</if>
+		</set>
+		where fid=#{fid}
+	</update>
+
+	<insert id="insertFeedback" parameterType="com.depression.model.Feedback" useGeneratedKeys="true" keyProperty="testingId">
+
+		insert into
+		feedback
+		(
+		mid,
+		f_content,
+		f_time,
+		is_delete
+		)
+		VALUES(
+		#{mid},
+		#{fContent},
+		#{fTime},
+		#{isDelete}
+		)
+
+	</insert>
+
+	<delete id="deleteFeedback" parameterType="string">
+		delete feedback where fid=#{fid}
+	</delete>
+
+</mapper>

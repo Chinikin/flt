@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.MemberStepCounterDAO">
+
+	<resultMap type="com.depression.model.MemberStepCounter" id="memberStepCounter"
+		autoMapping="true">
+		<id property="stepCounterId" column="step_counter_id" />
+		<result property="mid" column="mid" />
+		<result property="allStepCounter" column="all_step_counter" />
+		<result property="isDelete" column="is_delete" />
+		<result property="startTime" column="start_time" />
+		<result property="endTime" column="end_time" />
+	</resultMap>
+
+	<insert id="insert">
+	   <![CDATA[
+	       insert into member_step_counter (
+            mid,
+            all_step_counter,
+            is_delete,
+            start_time,
+            end_time
+           ) values (
+            #{mid},
+            #{allStepCounter},
+            #{isDelete},
+            #{startTime},
+            #{endTime}
+           )
+	   ]]>
+	</insert>
+
+	<select id="getMemberStepByParams" resultMap="memberStepCounter">
+	   <![CDATA[
+	       select * from member_step_counter where is_delete=0
+	   ]]>
+		<if test="mid != null">
+			<![CDATA[AND mid=#{mid}]]>
+		</if>
+		<if test="startTime !=null">
+	      	<![CDATA[AND DATE_FORMAT(start_time,'%Y%m%d')>=DATE_FORMAT(#{startTime},'%Y%m%d') and DATE_FORMAT(start_time,'%Y%m%d')<=DATE_FORMAT(#{endTime},'%Y%m%d')]]>
+		</if>
+	</select>
+
+	<update id="update">
+		update
+		member_step_counter
+		set
+		<if test="allStepCounter !=null">
+            <![CDATA[all_step_counter=#{allStepCounter},]]>
+		</if>
+		<if test="endTime !=null">
+            <![CDATA[end_time=#{endTime}]]>
+		</if>
+		where is_delete=0
+		<if test="startTime !=null">
+	      	<![CDATA[AND start_time=#{startTime}]]>
+		</if>
+		<if test="mid !=null">
+	      	<![CDATA[AND mid=#{mid}]]>
+		</if>
+		<if test="stepCounterId !=null">
+	      	<![CDATA[AND step_counter_id=#{stepCounterId}]]>
+		</if>
+	</update>
+
+	<update id="delete" parameterType="Integer">
+		update
+		member_step_counter
+		set is_delete=1
+		where 1=1
+		<if test="startTime !=null">
+	      	<![CDATA[AND start_time = #{startTime}]]>
+		</if>
+		<if test="mid !=null">
+	      	<![CDATA[AND mid = #{mid}]]>
+		</if>
+	</update>
+
+</mapper>

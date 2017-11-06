@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.TestingCommentDAO">
+
+	<resultMap type="com.depression.model.TestingComment" id="testingComment"
+		autoMapping="true">
+		<id property="commentId" column="comment_id" />
+		<result property="testingId" column="testing_id" />
+		<result property="mid" column="mid" />
+		<result property="testCommentId" column="test_comment_id" />
+		<result property="commentContent" column="comment_content" />
+		<result property="isDelete" column="is_delete" />
+		<result property="commentTime" column="comment_time" />
+	</resultMap>
+
+	<insert id="insert" useGeneratedKeys="true" keyProperty="commentId">
+	   <![CDATA[
+	       insert into testing_comment (
+            testing_id,
+            mid,
+            test_comment_id,
+            comment_content,
+            is_delete,
+            comment_time
+           ) values (
+            #{testingId},
+            #{mid},
+            #{testCommentId},
+            #{commentContent},
+            #{isDelete},
+            #{commentTime}
+           )
+	   ]]>
+	</insert>
+
+	<select id="getTestingComment" resultMap="testingComment">
+	   <![CDATA[
+	       select * from testing_comment where is_delete='0'
+	   ]]>
+		<if test="testingId != null">
+			<![CDATA[AND testing_id=#{testingId}]]>
+		</if>
+		<if test="mid !=null">
+	      	<![CDATA[AND mid = #{mid}]]>
+		</if>
+		<if test="testCommentId !=null">
+	      	<![CDATA[AND test_comment_id = #{testCommentId}]]>
+		</if>
+		<if test="commentContent !=null">
+	      	<![CDATA[AND comment_content = #{commentContent}]]>
+		</if>
+		<if test="commentId !=null">
+	      	<![CDATA[AND comment_id = #{commentId}]]>
+		</if>
+	</select>
+
+	<select id="selectByPage" resultMap="testingComment">
+	   <![CDATA[
+	       select * from testing_comment where is_delete = '0'
+	   ]]>
+		<if test="testingId != null">
+			<![CDATA[AND testing_id=#{testingId}]]>
+		</if>
+		<if test="mid !=null">
+	      	<![CDATA[AND mid = #{mid}]]>
+		</if>
+		<if test="testCommentId !=null">
+	      	<![CDATA[AND test_comment_id = #{testCommentId}]]>
+		</if>
+		<if test="commentId !=null">
+	      	<![CDATA[AND comment_id = #{commentId}]]>
+		</if>
+		<if test="commentTime !=null">
+	      	<![CDATA[AND comment_time = #{commentTime}]]>
+		</if>
+		<![CDATA[
+				order by comment_time desc
+			]]>
+		<!-- 分页 -->
+		<if test="pageIndex!=null and pageSize!=null">			
+			<![CDATA[
+				LIMIT #{pageStartNum},#{pageSize}
+			]]>
+		</if>
+	</select>
+	
+	<select id="getPageCounts" parameterType="com.depression.model.TestingComment" resultType="long">
+		<![CDATA[
+	       select count(*) from testing_comment where is_delete = '0'
+	   ]]>
+		<if test="testingId != null">
+			<![CDATA[AND testing_id=#{testingId}]]>
+		</if>
+		<if test="mid !=null">
+	      	<![CDATA[AND mid = #{mid}]]>
+		</if>
+		<if test="testCommentId !=null">
+	      	<![CDATA[AND test_comment_id = #{testCommentId}]]>
+		</if>
+		<if test="commentId !=null">
+	      	<![CDATA[AND comment_id = #{commentId}]]>
+		</if>
+		<if test="commentTime !=null">
+	      	<![CDATA[AND comment_time = #{commentTime}]]>
+		</if>
+	</select>
+
+	<update id="update">
+		update
+		testing_comment
+		set
+		<if test="commentContent !=null">
+            <![CDATA[comment_content=#{commentContent},]]>
+		</if>
+		<if test="isDelete !=null">
+            <![CDATA[is_delete=#{isDelete},]]>
+		</if>
+		<if test="commentTime !=null">
+            <![CDATA[comment_time=#{commentTime}]]>
+		</if>
+		<![CDATA[	 
+		 where 
+		 comment_id=#{commentId}
+		]]>
+	</update>
+
+	<update id="delete" parameterType="Integer">
+		update
+		testing_comment
+		set is_delete = '1'
+		where 1=1
+	    <![CDATA[AND comment_id = #{commentId}]]>
+	</update>
+
+</mapper>

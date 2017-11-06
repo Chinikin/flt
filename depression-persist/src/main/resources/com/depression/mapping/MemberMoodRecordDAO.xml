@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.MemberMoodRecordDAO">
+
+	<resultMap type="com.depression.model.MemberMoodRecord" id="memberMoodRecord"
+		autoMapping="true">
+		<id property="moodRecordId" column="mood_record_id" />
+		<result property="mid" column="mid" />
+		<result property="moodRecord" column="mood_record" />
+		<result property="isDelete" column="is_delete" />
+		<result property="recordDate" column="record_date" />
+	</resultMap>
+
+	<insert id="insert">
+	   <![CDATA[
+	       insert into member_mood_record (
+            mid,
+            mood_record,
+            is_delete,
+            record_date
+           ) values (
+            #{mid},
+            #{moodRecord},
+            #{isDelete},
+            #{recordDate}
+           )
+	   ]]>
+	</insert>
+
+	<select id="getMemberMoodRecord" resultMap="memberMoodRecord">
+	   <![CDATA[
+	       select * from member_mood_record where is_delete=0
+	   ]]>
+		<if test="mid != null">
+			<![CDATA[AND mid=#{mid}]]>
+		</if>
+		<if test="recordDate !=null">
+	      	<![CDATA[AND DATE_FORMAT(record_date,'%Y%m%d')>=DATE_FORMAT(#{recordDate},'%Y%m%d') and DATE_FORMAT(record_date,'%Y%m%d')<=DATE_FORMAT(#{recordDate},'%Y%m%d')]]>
+		</if>
+		<![CDATA[
+				order by record_date desc
+			]]>
+	</select>
+	
+	<select id="getMmrByTimeSlice" resultMap="memberMoodRecord">
+		select * from member_mood_record 
+		<where>
+			is_delete = 0
+			<if test="mid != null">
+				AND mid = #{mid}
+			</if>
+			<if test="begin != null">
+				<![CDATA[AND DATE_FORMAT(record_date, '%Y%m%d')>=DATE_FORMAT(#{begin}, '%Y%m%d')]]>
+			</if>
+			<if test="end != null">
+				<![CDATA[AND DATE_FORMAT(record_date, '%Y%m%d')<=DATE_FORMAT(#{end}, '%Y%m%d')]]>
+			</if>
+		</where>
+	</select>
+
+</mapper>

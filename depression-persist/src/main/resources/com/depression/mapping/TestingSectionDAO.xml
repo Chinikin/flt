@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.TestingSectionDAO">
+
+	<resultMap type="com.depression.model.TestingSection" id="testingSection"
+	autoMapping="true">
+		<id property="sectionId" column="section_id"/>
+		<result property="testingId" column="testing_id"/>
+		<result property="greaterThan" column="greater_than"/>
+		<result property="lessThan" column="less_than"/>
+		<result property="level" column="level"/>
+		<result property="detail" column="detail"/>
+		<result property="isDelete" column="is_delete"/>
+	</resultMap>
+	
+	<insert id="insertTestingSection" parameterType="com.depression.model.TestingSection">
+		insert into testing_section 
+		(
+			testing_id,
+			greater_than,
+			less_than,
+			level,
+			detail
+		)
+		VALUES(
+			#{testingId},
+			#{greaterThan},
+			#{lessThan},
+			#{level},
+			#{detail}
+		)
+	</insert>
+	
+	<update id="updateTestingSection" parameterType="com.depression.model.TestingSection">
+		update testing_section
+		<set>
+			<if test="testingId != null">
+				testing_id = #{testingId},
+			</if>
+			<if test="greaterThan != null">
+				greater_than = #{greaterThan},
+			</if>
+			<if test="lessThan != null">
+				less_than = #{lessThan},
+			</if>
+			<if test="level != null and level != ''">
+				level = #{level},
+			</if>
+			<if test="detail != null and detail != ''">
+				detail = #{detail},
+			</if>
+			<if test="isDelete != null">
+				is_delete = #{isDelete}
+			</if>			
+		</set>
+		where section_id=#{sectionId}
+	</update>
+	
+	<delete id="deleteTestingSection" parameterType="string">
+		delete from testing_section where section_id=#{sectionId}
+	</delete>
+	
+	<select id="checkTestingSectionExist" resultMap="testingSection">
+		select * from testing_section where
+		testing_id = #{testingId} and
+		greater_than = #{greaterThan} and
+		less_than = #{lessThan}
+	</select>
+	
+	<select id="getTestingSectionList" resultType="list" resultMap="testingSection">
+		select * from testing_section
+	</select>
+
+	<select id="getCounts" resultType="long">
+		select count(*) from testing_section
+	</select>
+	
+	<select id="getTestingSectionBySectionId" parameterType="string"
+	resultMap="testingSection">
+		select * from testing_section where section_id=#{sectionId}
+	</select>
+	
+	<select id="getTestingSectionByTestingId" resultMap="testingSection">
+		select * from testing_section where testing_id=#{testingId}
+	</select>
+	
+	<select id="getTestingSectionByTestingIdAndScore" 
+	resultMap="testingSection">
+		select * from testing_section where testing_id=#{testingId}
+		<![CDATA[and #{score} >= greater_than]]> 
+		<![CDATA[and #{score} <= less_than]]> 
+		and is_delete = 0
+	</select>
+	
+</mapper>

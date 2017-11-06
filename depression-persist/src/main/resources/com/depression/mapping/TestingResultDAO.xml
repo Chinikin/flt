@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.TestingResultDAO"> 
+	<resultMap type="com.depression.model.TestingResult" id="testingResult"
+	autoMapping="true">
+		<id property="resultId" column="result_id"/>
+		<result property="mid" column="mid"/>
+		<result property="testingId" column="testing_id"/>
+		<result property="questionsId" column="questions_id"/>
+		<result property="optionsId" column="options_id"/>
+		<result property="isDelete" column="is_delete"/>
+	</resultMap>
+
+	<insert id="insertTestingResult" parameterType="com.depression.model.TestingResult">
+		insert into testing_result 
+		(            
+			mid,
+			testing_id, 
+			questions_id, 
+			options_id
+		)
+		VALUES(
+			#{mid},
+			#{testingId},
+			#{questionsId},
+			#{optionsId}
+		)
+	</insert>
+	
+	<update id="updateTestingResult" parameterType="com.depression.model.TestingResult">
+		update testing_result
+		<set>
+			<if test="mid != null">
+				mid = #{mid},
+			</if>
+			<if test="testingId != null">
+				testing_id = #{testingId},
+			</if>
+			<if test="questionsId != null">
+				questions_id = #{questionsId},
+			</if>
+			<if test="optionsId != null">
+				options_id = #{optionsId},
+			</if>
+			<if test="isDelete != null">
+				is_delete = #{isDelete}
+			</if>
+		</set>
+		where result_id = #{resultId}
+	</update>
+	
+	<update id="updateTestingResultDisableByIds" parameterType="list">
+		update testing_result
+		<set>
+			is_delete = '1'
+		</set>
+		where result_id in
+		<foreach collection="list" item="resultId" open="("
+			separator="," close=")">
+			#{resultId, jdbcType=NUMERIC}
+		</foreach>
+	</update>
+	
+	<delete id="deleteTestingResult" parameterType="string">
+		delete from testing_result where result_id = #{resultId}
+	</delete>
+	
+	<select id="getTestingResultList"
+	resultMap="testingResult">
+		select * from testing_result
+	</select>
+	
+	<select id="getTestingResultByResultId" parameterType="string"
+	resultMap="testingResult">
+		select * from testing_result where result_id = #{resultId}
+	</select>
+	
+	<select id="getTestingResultByResultIds" parameterType="java.util.List"
+	resultMap="testingResult">
+		select * from testing_result where result_id in
+		<foreach item="item" index="index" collection="list"
+      		open="(" separator="," close=")">
+        	#{item}
+  		</foreach>
+	</select>
+	
+	<select id="getCounts" resultType="java.lang.Long">
+		select count(*) from testing_result
+	</select>
+	
+	<select id="getTestingResultByQuery" parameterType="map" 
+	resultMap="testingResult">
+		select * from testing_result
+		<where>
+			<if test="mid != null" >
+				mid = #{mid}
+			</if>
+			<if test="testingId != null">
+				AND testing_id = #{testingId}
+			</if>
+			<if test="questionsId != null">
+				AND questions_id = #{questionsId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getTestingResultByQueryTestingResult" parameterType="com.depression.model.TestingResult"
+	resultMap="testingResult">
+		select * from testing_result
+		<where>
+			<if test="mid != null" >
+				mid = #{mid}
+			</if>
+			<if test="testingId != null">
+				AND testing_id = #{testingId}
+			</if>
+			<if test="questionsId != null">
+				AND questions_id = #{questionsId}
+			</if>
+			<if test="optionsId != null">
+				AND options_id = #{optionsId}
+			</if>
+			<if test="isDelete != null">
+				AND is_delete = #{isDelete}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getValidTestingResultByQueryTestingResult" parameterType="com.depression.model.TestingResult"
+	resultMap="testingResult">
+		select * from testing_result 
+		<where>
+			is_delete = '0'
+			<if test="mid != null" >
+				AND mid = #{mid}
+			</if>
+			<if test="testingId != null">
+				AND testing_id = #{testingId}
+			</if>
+			<if test="questionsId != null">
+				AND questions_id = #{questionsId}
+			</if>
+			<if test="optionsId != null">
+				AND options_id = #{optionsId}
+			</if>
+		</where>
+	</select>
+	
+	<select id="getPageList" parameterType="com.depression.model.TestingResult"
+	resultMap="testingResult">
+		select * from testing_result where result_id > (
+		select result_id from testing_result
+		<where>
+			<if test="mid != null" >
+				mid = #{mid}
+			</if>
+			<if test="testingId != null">
+				AND testing_id = #{testingId}
+			</if>
+			<if test="questionsId != null">
+				AND questions_id = #{questionsId}
+			</if>
+		</where>
+		LIMIT ${pageStartNum}, 1
+		)
+		<if test="mid != null" >
+			AND mid = #{mid}
+		</if>
+		<if test="testingId != null">
+			AND testing_id = #{testingId}
+		</if>
+		<if test="questionsId != null">
+			AND questions_id = #{questionsId}
+		</if>
+		${pageSize};
+	</select>
+	
+	<select id="getPageCounts" parameterType="com.depression.model.TestingResult" 
+	resultType="long">
+		select count(*) from testing_result
+		<where>
+			<if test="mid != null" >
+				mid = #{mid}
+			</if>
+			<if test="testingId != null">
+				AND testing_id = #{testingId}
+			</if>
+			<if test="questionsId != null">
+				AND questions_id = #{questionsId}
+			</if>
+		</where>		
+	</select>
+	
+</mapper>

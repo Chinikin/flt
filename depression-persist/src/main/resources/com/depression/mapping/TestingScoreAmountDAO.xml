@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.TestingScoreAmountDAO">
+	
+	<resultMap type="com.depression.model.TestingScoreAmount" id="testingScoreAmount"
+	autoMapping="true">
+		<id property="scoreId" column="score_id"/>
+		<result property="mid" column="mid" />
+		<result property="testingId" column="testing_id" />
+		<result property="score" column="score" />
+		<result property="testTime" column="test_time" />
+		<result property="isDelete" column="is_delete" />				
+	</resultMap>
+	
+	<insert id="insertTestingScoreAmount">
+		insert into testing_score_amount
+		( 
+			mid,        
+			testing_id, 
+			score,      
+			test_time   
+		)
+		VALUES
+		(
+			#{mid},
+			#{testingId},
+			#{score},
+			#{testTime}
+		)
+	</insert>
+	
+	<update id="updateTestingScoreAmount">
+		update testing_score_amount 
+		<set>
+			<if test="mid != null">
+				mid = #{mid},
+			</if>
+			<if test="testingId != null">
+				testing_id = #{testingId},
+			</if>
+			<if test="score != null">
+				score = #{score},
+			</if>
+			<if test="testTime != null and testTime != ''">
+				test_time = #{testTime},
+			</if>
+			<if test="isDelete != null">
+				is_delete = #{isDelete}
+			</if>
+		</set>
+		where score_id = #{scoreId}
+	</update>
+
+	<delete id="deleteTestingScoreAmount">
+		delete from testing_score_amount where score_id = #{scoreId}
+	</delete>
+	
+	<select id="getCounts" resultType="long">
+		select count(*) from testing_score_amount
+	</select>
+
+	<select id="getTestingScoreAmountList" resultType="list"
+	resultMap="testingScoreAmount">
+		select * from testing_score_amount
+	</select>
+	
+	<select id="getTestingScoreAmountByScoreId" resultMap="testingScoreAmount">
+		select * from testing_score_amount where score_id = #{scoreId}
+	</select>
+
+	<select id="getTestingScoreAmountByMid" resultType="list"
+	resultMap="testingScoreAmount">
+		select * from testing_score_amount where mid = #{mid} 
+		<if test="isDelete != null">
+			and is_delete = #{isDelete}
+		</if>
+		order by test_time desc
+		LIMIT #{pageStartNum},#{pageSize}
+	</select>
+
+	<select id="getTestingScoreAmountByTestingId" resultType="list"
+	resultMap="testingScoreAmount">
+		select * from testing_score_amount where testing_id = #{testingId}
+	</select>
+
+	<select id="getTestingScoreAmountByMidAndTestingId" resultMap="testingScoreAmount">
+		select * from testing_score_amount where is_delete = '0'
+		and mid = #{mid} and testing_id = #{testingId}
+	</select>
+	
+</mapper>

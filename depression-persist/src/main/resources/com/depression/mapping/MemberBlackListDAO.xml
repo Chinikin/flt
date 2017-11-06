@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.MemberBlackListDAO">
+
+	<resultMap type="com.depression.model.MemberBlackList" id="memberBlackList"
+		autoMapping="true">
+		<id property="memberBlackId" column="member_black_id" />
+		<result property="mid" column="mid" />
+		<result property="blackMid" column="black_mid" />
+		<result property="isDelete" column="is_delete" />
+	</resultMap>
+
+	<insert id="insert">
+	   <![CDATA[
+	       insert into member_black_list (
+            mid,
+            black_mid,
+            is_delete
+           ) values (
+            #{mid},
+            #{blackMid},
+            #{isDelete}
+           )
+	   ]]>
+	</insert>
+
+	<update id="delete" parameterType="Integer">
+		update
+		member_black_list
+		set is_delete=1
+		where 1=1
+		<if test="mid != null">
+			<![CDATA[AND mid=#{mid}]]>
+		</if>
+		<if test="blackMid !=null">
+	      	<![CDATA[AND black_mid = #{blackMid}]]>
+		</if>
+	</update>
+
+	<update id="update" parameterType="Integer">
+		update
+		member_black_list
+		set is_delete=0
+		where 1=1
+		<if test="mid != null">
+			<![CDATA[AND mid=#{mid}]]>
+		</if>
+		<if test="blackMid !=null">
+	      	<![CDATA[AND black_mid = #{blackMid}]]>
+		</if>
+	</update>
+
+	<select id="getMemberBlackList" resultMap="memberBlackList">
+	   <![CDATA[
+	       select * from member_black_list where 1=1
+	   ]]>
+		<if test="mid != null">
+			<![CDATA[AND mid=#{mid}]]>
+		</if>
+		<if test="blackMid !=null">
+	      	<![CDATA[AND black_mid = #{blackMid}]]>
+		</if>
+	</select>
+
+	<select id="findAllBlackListByMid" resultMap="memberBlackList">
+	   <![CDATA[
+	       select * from member_black_list where is_delete=0
+	   ]]>
+		<if test="mid != null">
+			<![CDATA[AND mid=#{mid}]]>
+		</if>
+	</select>
+
+</mapper>

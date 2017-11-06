@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.MemberPrivateLetterDAO">
+
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap type="com.depression.model.MemberPrivateLetter"
+		autoMapping="true" id="memberPrivateLetter">
+		<!-- 用id属性来映射主键字段 -->
+		<id property="memberPrivateLetterId" column="member_private_letter_id" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="senderId" column="sender_id" />
+		<result property="receiverId" column="receiver_id" />
+		<result property="type" column="type" />
+		<result property="content" column="content" />
+		<result property="readStatus" column="read_status" />
+		<result property="isDelete" column="is_delete" />
+		<result property="sendTime" column="send_time" />
+		<result property="receiveTime" column="receive_time" />
+	</resultMap>
+
+	<insert id="insert" useGeneratedKeys="true">
+	   <![CDATA[
+	       insert into member_private_letter(
+           sender_id,
+           receiver_id,
+           type,
+           content,
+           read_status,
+           is_delete,
+           send_time,
+           receive_time
+           ) values (
+            #{senderId},
+            #{receiverId},
+            #{type},
+            #{content},
+            #{readStatus},
+            #{isDelete},
+            #{sendTime},
+            #{receiveTime}
+           )
+	   ]]>
+	</insert>
+
+	<select id="selectByPage" resultMap="memberPrivateLetter">
+		SELECT
+		*
+		FROM
+		member_private_letter
+		WHERE
+		1 = 1
+		<if test="memberPrivateLetterId !=null">
+            <![CDATA[AND member_private_letter_id=#{memberPrivateLetterId}]]>
+		</if>
+		<if test="senderId !=null">
+            <![CDATA[AND sender_id=#{senderId}]]>
+		</if>
+		<if test="receiverId !=null">
+            <![CDATA[AND receiver_id=#{receiverId}]]>
+		</if>
+		<if test="type !=null">
+            <![CDATA[AND type=#{type}]]>
+		</if>
+		<if test="sendTime !=null">
+            <![CDATA[AND send_time=#{sendTime}]]>
+		</if>
+		<if test="receiveTime !=null">
+            <![CDATA[AND receive_time=#{receiveTime}]]>
+		</if>
+		<![CDATA[
+				order by receive_time desc
+			]]>
+		<!-- 分页 -->
+		<if test="pageIndex!=null and pageSize!=null">			
+			<![CDATA[
+				LIMIT #{pageStartNum},#{pageSize}
+			]]>
+		</if>
+	</select>
+
+	<select id="selectCount" resultType="long">
+		SELECT count(*)
+		from member_private_letter
+		where 1=1
+		<if test="memberPrivateLetterId !=null">
+            <![CDATA[AND member_private_letter_id=#{memberPrivateLetterId}]]>
+		</if>
+		<if test="senderId !=null">
+            <![CDATA[AND sender_id=#{senderId}]]>
+		</if>
+		<if test="receiverId !=null">
+            <![CDATA[AND receiver_id=#{receiverId}]]>
+		</if>
+		<if test="type !=null">
+            <![CDATA[AND type=#{type}]]>
+		</if>
+		<if test="sendTime !=null">
+            <![CDATA[AND send_time=#{sendTime}]]>
+		</if>
+		<if test="receiveTime !=null">
+            <![CDATA[AND receive_time=#{receiveTime}]]>
+		</if>
+	</select>
+
+
+</mapper>

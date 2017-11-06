@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.PushDevTypeDAO">
+
+	<!--通过<resultMap>映射实体类属性名和表的字段名对应关系 -->
+	<resultMap type="com.depression.model.PushDevType"
+		autoMapping="true" id="PushDevType">
+		<!-- 用id属性来映射主键字段 -->
+		<id property="pushId" column="push_id" />
+		<!-- 用result属性来映射非主键字段 -->
+		<result property="mid" column="mid" />
+		<result property="channelId" column="channel_id" />
+		<result property="userId" column="user_id" />
+		<result property="devType" column="dev_type" />
+	</resultMap>
+	<sql id="BASE_SQL">
+		push_id,
+		mid,
+		channel_id,
+		user_id,
+		dev_type
+	</sql>
+	<sql id="BASE_PARAMETER">
+		#{pushId},
+		#{mid},
+		#{channelId},
+		#{userId},
+		#{devType}
+	</sql>
+	<sql id="BASE_QUERY">
+		<if test="pushId !=null">
+            <![CDATA[AND push_id=#{pushId}]]>
+		</if>
+		<if test="mid !=null">
+            <![CDATA[AND mid=#{mid}]]>
+		</if>
+		<if test="channelId !=null">
+            <![CDATA[AND channel_id=#{channelId}]]>
+		</if>
+		<if test="userId !=null">
+            <![CDATA[AND user_id=#{userId}]]>
+		</if>
+		<if test="devType !=null">
+            <![CDATA[AND dev_type=#{devType}]]>
+		</if>
+	</sql>
+	<insert id="insert" useGeneratedKeys="true" keyProperty="pushId">
+		insert into push_dev_type(
+		<include refid="BASE_SQL"></include>
+		) values (
+		<include refid="BASE_PARAMETER"></include>
+		)
+	</insert>
+
+	<select id="selectBy" resultMap="PushDevType">
+		SELECT *
+		from push_dev_type
+		where 1=1
+		<include refid="BASE_QUERY"></include>
+	</select>
+
+	<select id="selectByPage" resultMap="PushDevType">
+		SELECT *
+		from push_dev_type
+		where 1=1
+		<include refid="BASE_QUERY"></include>
+		<![CDATA[
+				order by push_id DESC
+			]]>
+		<!-- 分页 -->
+		<if test="pageIndex!=null and pageSize!=null">			
+			<![CDATA[
+				LIMIT #{pageStartNum},#{pageSize}
+			]]>
+		</if>
+	</select>
+
+	<select id="selectCount" resultType="long">
+		SELECT count(*)
+		from push_dev_type
+		where 1=1
+		<include refid="BASE_QUERY"></include>
+	</select>
+
+	<update id="update">
+		update
+		push_dev_type
+		set
+		<if test="mid !=null">
+            <![CDATA[ mid=#{mid},]]>
+		</if>
+		<if test="channelId !=null">
+            <![CDATA[ channel_id=#{channelId},]]>
+		</if>
+		<if test="userId !=null">
+            <![CDATA[ user_id=#{userId},]]>
+		</if>
+		<if test="devType !=null">
+            <![CDATA[ dev_type=#{devType}]]>
+		</if>
+		<![CDATA[	 
+		 where 
+		 push_id=#{pushId} limit 1
+		]]>
+	</update>
+	<delete id="delete">
+		delete from push_dev_type
+		where push_id =#{pushId}
+	</delete>
+</mapper>

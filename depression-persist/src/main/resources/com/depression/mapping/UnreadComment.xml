@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.UnreadCommentDAO">
+
+	<resultMap type="com.depression.model.UnreadComment" id="unreadComment"
+	autoMapping="true">
+		<id property="unreadId"  column="unread_id"/>
+		<result property="mid" column="mid" />
+		<result property="commentId" column="comment_id"/>
+		<result property="type" column="type"/>
+		<result property="isRead" column="is_read"/>
+	</resultMap>
+	
+	<sql id="base_column_for_insert">
+		insert into unread_comment 
+		(
+			mid,
+			comment_id,
+			type
+		)values
+		( 
+			#{mid},
+			#{commentId},
+			#{type}
+		)
+	</sql>
+
+	<insert id="insertUnreadComment">
+		<include refid="base_column_for_insert"/>
+	</insert>
+		
+	<sql id="base_sql_for_delete">
+		delete from unread_comment 
+		where unread_id in 
+		<foreach collection="list" item="id" open="("
+			separator="," close=")">
+			#{id}
+		</foreach>
+	</sql>
+
+	<delete id="deleteUnreadComment">
+		<include refid="base_sql_for_delete"/>
+	</delete>
+	
+	<delete id="deleteUnreadArticleComment">
+		delete from unread_comment 
+		where unread_id in
+		(
+			select unread_id from (select * from unread_comment) as a, article_comment b 
+			where a.mid=#{mid}  and b.article_id=#{articleId} and a.comment_id=b.comment_id
+		)
+	</delete>
+	
+	<delete id="deleteUnreadTestingComment">
+		delete from unread_comment 
+		where unread_id in
+		(
+			select unread_id from (select * from unread_comment) as a, testing_comment b 
+			where a.mid=#{mid}  and b.testing_id=#{testingId} and a.comment_id=b.comment_id
+		)	
+	</delete>
+	
+	<delete id="deleteUnreadUpdateComment">
+		delete from unread_comment 
+		where unread_id in
+		(
+			select unread_id from (select * from unread_comment) as a, member_update_comment b 
+			where a.mid=#{mid}  and b.update_id=#{updateId} and a.comment_id=b.comment_id
+		)		
+	</delete>
+	
+	<delete id="deleteUnreadAdvisoryComment">
+		delete from unread_comment 
+		where unread_id in
+		(
+			select unread_id from (select * from unread_comment) as a, member_advisory_comment b 
+			where a.mid=#{mid}  and b.advisory_id=#{advisoryId} and a.comment_id=b.comment_id
+		)		
+	</delete>
+	
+	<select id="selectByPage" resultMap="unreadComment">
+		select * from unread_comment 
+		where mid = #{mid}
+		order by unread_id desc
+		LIMIT #{pageStartNum},#{pageSize}
+	</select>
+	
+	<select id="count" resultType="long">
+		select count(*) from unread_comment where mid = #{mid}
+	</select>
+	
+	<select id="countUnread" resultType="long">
+		select count(*) from unread_comment where mid = #{mid} and is_read = 0
+	</select>
+	
+	<update id="readComment" parameterType="java.lang.Long">
+	    update unread_comment 
+	    set is_read = 1 
+	    where unread_id=#{unreadId}
+	</update>
+</mapper>

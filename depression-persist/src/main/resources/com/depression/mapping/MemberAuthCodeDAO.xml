@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.MemberAuthCodeDAO">
+
+	<resultMap type="com.depression.model.MemberAuthCode" id="memberAuthCode"
+		autoMapping="true">
+		<id property="id" column="id" />
+		<result property="mobilePhone" column="mobile_phone" />
+		<result property="authCode" column="auth_code" />
+		<result property="createTime" column="create_time" />
+	</resultMap>
+
+	<insert id="insert">
+	   <![CDATA[
+	       insert into member_auth_code (
+            mobile_phone,
+            auth_code,
+            create_time
+           ) values (
+            #{mobilePhone},
+            #{authCode},
+            #{createTime}
+           )
+	   ]]>
+	</insert>
+
+	<select id="getAuthCode" resultMap="memberAuthCode">
+	   <![CDATA[
+	       select * from member_auth_code where 1=1
+	   ]]>
+		<if test="mobilePhone !=null">
+	      	<![CDATA[AND mobile_phone = #{mobilePhone}]]>
+		</if>
+	</select>
+
+	<update id="update">
+		update
+		member_auth_code
+		set
+		<if test="authCode !=null">
+	      	<![CDATA[auth_code = #{authCode}]]>
+		</if>
+		<![CDATA[	 
+		 where 
+		 mobile_phone=#{mobilePhone}
+		]]>
+	</update>
+
+    <delete id="delete" parameterType="string" >
+    delete from member_auth_code
+    where mobile_phone = #{mobilePhone,jdbcType=VARCHAR}
+  </delete>
+
+</mapper>

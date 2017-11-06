@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration >
+  <classPathEntry location="C:\Program Files (x86)\MySQL\Connector.J 5.1\mysql-connector-java-5.1.38-bin.jar"/>
+  <context id="context1"  >
+  
+  	<property name="javaFileEncoding" value="utf-8"/>
+  
+  	<plugin type="org.mybatis.generator.plugins.InsertReturnIdPlugin"></plugin>
+	<plugin type="org.mybatis.generator.plugins.EnableCommentPlugin"></plugin>
+  	<plugin type="org.mybatis.generator.plugins.LogicallyDeletePlugin"></plugin>
+  
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver" 
+    connectionURL="jdbc:mysql://192.168.0.247:3306/depression?useUnicode=true&amp;amp;characterEncoding=utf-8" 
+    userId="root" 
+    password="root" >
+    </jdbcConnection>
+    
+    <javaModelGenerator targetPackage="com.depression.model" targetProject="depression-model">
+      <property name="enableSubPackages" value="true" />
+      <property name="trimStrings" value="true" />
+    </javaModelGenerator>
+    
+     <sqlMapGenerator  targetPackage="com.depression.mapping"  targetProject="depression-persist/src/main/resources">
+      <property name="enableSubPackages" value="true" />
+    </sqlMapGenerator>
+    
+    <javaClientGenerator type="XMLMAPPER" targetPackage="com.depression.dao"  targetProject="depression-persist">
+      <property name="enableSubPackages" value="true" />
+    </javaClientGenerator>
+    
+<!--     <table tableName="%"   enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
+    enableSelectByExample="false" enableDeleteByPrimaryKey="false"  enableUpdateByPrimaryKey="false">
+    	<property name="superClass" value="Page"/>
+    </table> -->
+    <table tableName="recommend"   enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false"
+    enableSelectByExample="false" enableDeleteByPrimaryKey="false"  enableUpdateByPrimaryKey="false">
+    	<property name="superClass" value="Page"/>
+    </table>
+    
+  </context>
+</generatorConfiguration>

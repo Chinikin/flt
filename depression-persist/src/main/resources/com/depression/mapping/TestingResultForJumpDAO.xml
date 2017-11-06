@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper     
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"     
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.depression.dao.TestingResultForJumpDAO">
+	<resultMap type="com.depression.model.TestingResultForJump"
+		id="testingResultForJump" autoMapping="true">
+		<id property="resId" column="res_id" />
+		<result property="testingId" column="testing_id" />
+		<result property="resultTag" column="result_tag" />
+		<result property="title" column="title" />
+		<result property="thumbnail" column="thumbnail" />
+		<result property="detail" column="detail" />
+		<result property="isDelete" column="is_delete" />
+	</resultMap>
+
+	<insert id="insertTestingResultForJump">
+		insert into testing_result_for_jump
+		(
+		testing_id,
+		result_tag,
+		title,
+		thumbnail,
+		detail
+		)
+		VALUES(
+		#{testingId},
+		#{resultTag},
+		#{title},
+		#{thumbnail},
+		#{detail}
+		)
+	</insert>
+
+	<update id="updateTestingResultForJump">
+		update testing_result_for_jump
+		<set>
+			<if test="testingId != null">
+				testing_id = #{testingId},
+			</if>
+			<if test="resultTag != null">
+				result_tag = #{resultTag},
+			</if>
+			<if test="title != null">
+				title = #{title},
+			</if>
+			<if test="thumbnail != null">
+				thumbnail = #{thumbnail},
+			</if>
+			<if test="detail != null">
+				detail = #{detail},
+			</if>
+			<if test="isDelete != null">
+				is_delete = #{isDelete}
+			</if>
+		</set>
+		where res_id = #{resId}
+	</update>
+
+	<delete id="deleteTestingResultForJump" parameterType="string">
+		delete
+		from
+		testing_result_for_jump where res_id = #{resId}
+	</delete>
+
+	<select id="getTestingResultForJumpList" resultMap="testingResultForJump">
+		select * from
+		testing_result_for_jump
+	</select>
+
+	<select id="getTestingResultForJumpByResultId" parameterType="string"
+		resultMap="testingResultForJump">
+		select * from testing_result_for_jump where res_id =
+		#{resId}
+	</select>
+
+	<select id="getTestingResultForJumpByResultIds" parameterType="java.util.List"
+		resultMap="testingResultForJump">
+		select * from testing_result_for_jump where res_id in
+		<foreach item="item" index="index" collection="list" open="("
+			separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="getCounts" resultType="java.lang.Long">
+		select count(*) from
+		testing_result_for_jump
+	</select>
+
+	<select id="getTestingResultForJumpByQuery" parameterType="map"
+		resultMap="testingResultForJump">
+		select * from testing_result_for_jump
+		<where>
+			<if test="testingId != null">
+				testing_id = #{testingId}
+			</if>
+			<if test="resultTag != null">
+				AND result_tag = #{resultTag}
+			</if>
+			<if test="title != null">
+				AND title = #{title}
+			</if>
+		</where>
+	</select>
+
+	<select id="getTestingResultForJumpByQueryTestingResult"
+		resultMap="testingResultForJump">
+		select * from testing_result_for_jump
+		<where>
+			<if test="testingId != null">
+				testing_id = #{testingId}
+			</if>
+			<if test="resultTag != null">
+				AND result_tag = #{resultTag}
+			</if>
+			<if test="title != null">
+				AND title = #{title}
+			</if>
+			<if test="isDelete != null">
+				AND is_delete = #{isDelete}
+			</if>
+		</where>
+	</select>
+
+	<select id="getPageList" resultMap="testingResultForJump">
+		select * from testing_result where res_id > (
+		select res_id from
+		testing_result_for_jump
+		<where>
+			<if test="testingId != null">
+				testing_id = #{testingId}
+			</if>
+			<if test="resultTag != null">
+				AND result_tag = #{resultTag}
+			</if>
+			<if test="title != null">
+				AND title = #{title}
+			</if>
+			<if test="isDelete != null">
+				AND is_delete = #{isDelete}
+			</if>
+		</where>
+		LIMIT ${pageStartNum}, 1
+		)
+		<if test="testingId != null">
+			testing_id = #{testingId}
+		</if>
+		<if test="resultTag != null">
+			AND result_tag = #{resultTag}
+		</if>
+		<if test="title != null">
+			AND title = #{title}
+		</if>
+		<if test="isDelete != null">
+			AND is_delete = #{isDelete}
+		</if>
+		${pageSize};
+	</select>
+
+	<select id="getPageCounts" resultType="long">
+		select count(*) from testing_result_for_jump
+		<where>
+			<if test="testingId != null">
+				testing_id = #{testingId}
+			</if>
+			<if test="resultTag != null">
+				AND result_tag = #{resultTag}
+			</if>
+			<if test="title != null">
+				AND title = #{title}
+			</if>
+			<if test="isDelete != null">
+				AND is_delete = #{isDelete}
+			</if>
+		</where>
+	</select>
+
+</mapper>
